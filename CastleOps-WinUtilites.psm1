@@ -230,3 +230,15 @@ function Write-FailLog
 		return 1
 	}
 }
+
+function Send-Email
+{
+	param
+	(
+		[string]$ConfigLocation
+	)
+	
+	$ConfigXML = [xml](Get-Content $ConfigLocation)
+	
+	$SMTPServ = $ConfigXML.configuration.email.SMTPServer
+}
