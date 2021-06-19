@@ -4,6 +4,10 @@
 #>
 
 
+#External Variables for user input to request what they want to snap and update.
+# Here we dot source the External variables PowerShell File
+. "$env:systemdrive\CastleOps\Armory.ps1"
+
 function bootstrapinstaller
 {
 	
@@ -101,8 +105,7 @@ function CreateVMSnapshot
 
 
 
-
-Export-ModuleMember -Function Install-Service
 Export-ModuleMember -Function bootstrapinstaller
 Export-ModuleMember -Function vmware-cli-update
 Export-ModuleMember -Function Connect-VIServers
+Export-ModuleMember -Function Install-Service
