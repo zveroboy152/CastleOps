@@ -1,5 +1,6 @@
 
-
+$global:SuccessLog
+$global:FailLog
 $global:ErrLog
 
 function update-VM
@@ -130,6 +131,98 @@ function Write-ErrLog
 	try
 	{
 		Add-Content -Path $global:ErrLog -Value $ErrMessage
+		return 0
+	}
+	catch
+	{
+		return 1
+	}
+}
+
+function SuccessLogLocation
+{
+	param
+	(
+		[string]$LogLocation
+	)
+	
+	if (Test-Path $LogLocation)
+	{
+		$global:SuccessLog = $LogLocation
+		return 0
+	}
+	else
+	{
+		if ($LogLocation -like "*.txt")
+		{
+			try
+			{
+				New-Item $LogLocation
+			}
+			catch
+			{
+				return 1
+			}
+		}
+	}
+}
+
+function Write-SuccessLog
+{
+	param
+	(
+		[string]$Log
+	)
+	
+	try
+	{
+		Add-Content -Path $global:SuccessLog -Value $Log
+		return 0
+	}
+	catch
+	{
+		return 1
+	}
+}
+
+function Set-FailLogLocation
+{
+	param
+	(
+		[string]$LogLocation
+	)
+	
+	if (Test-Path $LogLocation)
+	{
+		$global:FailLog = $LogLocation
+		return 0
+	}
+	else
+	{
+		if ($LogLocation -like "*.txt")
+		{
+			try
+			{
+				New-Item $LogLocation
+			}
+			catch
+			{
+				return 1
+			}
+		}
+	}
+}
+
+function Write-FailLog
+{
+	param
+	(
+		[string]$Log
+	)
+	
+	try
+	{
+		Add-Content -Path $global:FailLog -Value $Log
 		return 0
 	}
 	catch
