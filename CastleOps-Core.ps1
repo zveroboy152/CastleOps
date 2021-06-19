@@ -3,7 +3,9 @@ This is CastleOps.  I wrote this to help myself, and others, in automating their
 infrastructure.  This script, as of V1, can be used and installed as a service on a server to run in a scheduled automated sequence.
  -Zveroboy
 #>
-
+#External Variables for user input to request what they want to snap and update.
+# Here we dot source the External variables PowerShell File
+. "$env:systemdrive\CastleOps\Armory.ps1"
 
 function bootstrapinstaller
 {
@@ -23,6 +25,10 @@ function bootstrapinstaller
 	(New-Object System.Net.WebClient).DownloadFile("$CastleOpsCore", "$userpath2")
 	
 }
+function PreUpdateSnapshot {
+    New-Snapshot VM "$requestsnapshot" Name "$snapshotname" Memory -Verbose
+}
+
 
 function vmware-cli-update
 {
