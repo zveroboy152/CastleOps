@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <Hosts>
+    <VM>
+      <HostName>DEFAULT</HostName>
+    </VM>
+  </Hosts>
+  <email>
+    <SMTPServer>smtp.domain.here</SMTPServer>
+    <Sender>test.sender@nodomain.co</Sender>
+    <Recipients>
+      <recipient>test.mail@nodomain.co</recipient>
+    </Recipients>
+  </email>
+</configuration>
