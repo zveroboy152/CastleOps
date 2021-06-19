@@ -6,9 +6,9 @@
 
 #External Variables for user input to request what they want to snap and update.
 # Here we dot source the External variables PowerShell File
-. "$env:systemdrive\CastleOps\Armory.ps1"
+#. "$env:systemdrive\CastleOps\Armory.ps1"
 
-function bootstrapinstaller
+function bootstrap-installer
 {
 	
 	New-Item "$env:SystemDrive\CastleOps" -ItemType Directory
@@ -73,7 +73,11 @@ function Connect-VIServers
 	{
 		try
 		{
-			Connect-VIServer -Server "$vihosts" -Verbose
+			if ($Host -ne $null)
+			{
+				Connect-VIServer -Server "$vihosts"
+			}
+			
 		}
 		catch
 		{
@@ -93,19 +97,73 @@ function Install-Service
 	Start-Process -FilePath $NSSMExe -ArgumentList 'install CastleOps-Core "$env:SystemDrive\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "-command "& {$env:SystemDrive\CastleOps\CastleOps-Core.ps1; Start-Monitoring }"" ' -NoNewWindow -Wait
 }
 
-function CreateVMSnapshot
+
+#It is currently 3:33 AM - good luck reading this amalgimation of code I wrote.
+
+function Create-VMSnapshot
 {
 	param ([string] $Host)
 	
 	$Date = Get-Date -Format ddmmmyyyy
 	$Time = Get-Date -Format hh:mm
-	$HostInfo = get-vm -name $Host
+	$HostInfo = Get-VM -Name $Host
+	$HostOS = $HostInfo.Guest.GuestFamily
 	
+	if ($HostOS -eq "windowsGuest")
+	{
+		$HostOS = "Windows"
+	}
+	else
+	{
+		$HostOS = "Linux"
+	}
+	
+	$SnapshotString = $HostOS + $Date + $Time
+	$DescriptionString = "Date: " + $Date + "Time: " + $Time + "Operating System" + $HostOS
+	
+	try
+	{
+		Stop-VM $Host
+		
+		try
+		{
+			New-Snapshot -VM $Host -Name $SnapshotString -Description $DescriptionString
+			
+			try
+			{
+				Start-VM $Host
+				Write-Host $Host ": Snapshot created successfully" -ForegroundColor Green
+				return 0;
+			}
+			catch
+			{
+				Write-Host $Host "Failed to start - intervention required" -ForegroundColor Red
+				return 1
+			}
+		}
+		catch
+		{
+			write-host $Host "Snapshot Failed - starting VM" -ForegroundColor Red
+			try
+			{
+				Start-VM $Host
+			}
+			catch
+			{
+				Write-Host $Host "Failed to start - intervention required" -ForegroundColor Red
+				return 1
+			}
+		}
+	}
+	catch
+	{
+		Write-Host $Host ": Failed to stop - exiting" -ForegroundColor Red
+		return 1
+	}
 }
 
-
-
-Export-ModuleMember -Function bootstrapinstaller
+Export-ModuleMember -Function bootstrap-installer
 Export-ModuleMember -Function vmware-cli-update
 Export-ModuleMember -Function Connect-VIServers
 Export-ModuleMember -Function Install-Service
+Export-ModuleMember -Function Create-VMSnapshot

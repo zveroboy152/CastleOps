@@ -10,6 +10,4 @@
 		Main script to orchestrate CastleOps.
 #>
 
-Import-Module 
-
-
+Import-Module .\CastleOps-Core.psm1
