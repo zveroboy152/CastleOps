@@ -35,10 +35,11 @@ function vmware-cli-update
 	try
 	{
 		#Installing NuGet for PowershellGet
-		Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
-
+		Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Verbose
 		#Install VMware PowerCLI
-		Install-Module -Name VMware.PowerCLI -RequiredVersion 12.0.0.15947286 -Force
+		Install-Module -Name VMware.PowerCLI -RequiredVersion 12.0.0.15947286 -Force -Verbose
+		Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false | Out-Null
+		Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $flase | Out-Null
 		write-host "Update Complete!" -ForegroundColor Green
 	}
 	
@@ -69,10 +70,6 @@ function Connect-VIServers
 			Write-Host $Host ": offline" -ForegroundColor red
 		}
 	}
-	
-	Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false | Out-Null
-	
-	
 	foreach ($Host in $HostList)
 	{
 		try
