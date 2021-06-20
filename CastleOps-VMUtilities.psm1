@@ -34,7 +34,11 @@ function vmware-cli-update
 	
 	try
 	{
-		Install-Module VMware.PowerCLI
+		#Installing NuGet for PowershellGet
+		Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+
+		#Install VMware PowerCLI
+		Install-Module -Name VMware.PowerCLI -RequiredVersion 12.0.0.15947286 -Force
 		write-host "Update Complete!" -ForegroundColor Green
 	}
 	
