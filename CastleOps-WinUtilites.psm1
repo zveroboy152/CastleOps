@@ -3,14 +3,20 @@ $global:SuccessLog
 $global:FailLog
 $global:ErrLog
 
+
 function update-VM
-{
+{	#Service Account stated in Documentation to be used (or domain admin of any sort) to remotely begin updates.  This will be stated in the XML
+	$updatevmserviceaccount =
+	$serviceaccountdomain = 
 	param
 	([string]$Host)
-	
+	$ConfigXML = [xml](Get-Content $path)
 	try
 	{
-		Enter-PSSession -ComputerName $Host
+		Invoke-Command -ComputerName Server01 -Credential $serviceaccountdomain\$$updatevmserviceaccount -ScriptBlock { 
+		Install-Module PSWindowsUpdate -Verbose -Force
+		Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -AutoReboot
+		}
 	}
 	catch
 	{
